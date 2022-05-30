@@ -7,7 +7,10 @@ const User = require("../models/User");
 
 // GET ALL USERS
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
+  const query = req.query.new;
+  const users = query
+    ? await User.find().sort({ _id: -1 }).limit(5)
+    : await User.find();
 
   res.status(200).json({
     status: "success",
@@ -73,5 +76,23 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: null,
+  });
+});
+
+// GET USER STATS
+// Number of users registered per month in the last past year
+exports.getUsersStats = catchAsync(async (req, res, next) => {
+  const date = new Date();
+  const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
+
+  const data = await User.aggregate([
+    { $match: { createdAt: { $gte: lastYear } } },
+    { $project: { month: { $month: "$createdAt" } } },
+    { $group: { _id: "$month", total: { $sum: 1 } } },
+  ]);
+
+  res.status(200).json({
+    status: "success",
+    data: { data },
   });
 });

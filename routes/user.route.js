@@ -11,9 +11,12 @@ const {
   deleteUser,
   getOneUser,
   getAllUsers,
+  getUsersStats,
 } = require("../controllers/user.controller");
 
 router.route("/").get(authentication, adminAccess, getAllUsers);
+
+router.get("/stats", authentication, adminAccess, getUsersStats);
 
 router
   .route("/:userId")
