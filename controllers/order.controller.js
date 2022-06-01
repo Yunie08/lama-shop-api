@@ -68,8 +68,33 @@ exports.deleteOrder = catchAsync(async (req, res, next) => {
 
 // GET MONTHLY INCOME
 //TODO: Finish!
-// exports.getMonthlyIncome = catchAsync(async (req, res, next) => {
-//   const date = new Date();
-//   const lastMonth = newDate(date.setMonth(date.getMonth - 1));
-//   const previousMonth = newDate(lastMonth.setMonth(date.getMonth - 1));
-// });
+exports.getMonthlyIncome = catchAsync(async (req, res, next) => {
+  const date = new Date();
+  const lastMonth = new Date(date.setMonth(date.getMonth - 1));
+  const previousMonth = new Date(lastMonth.setMonth(lastMonth.getMonth - 1));
+
+  const income = await Order.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: previousMonth },
+      },
+    },
+    {
+      $project: {
+        month: { $month: "$createdAt" },
+        sales: "$amount",
+      },
+    },
+    {
+      $group: {
+        _id: "$month",
+        total: { $sum: "$sales" },
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: "success",
+    data: { income },
+  });
+});

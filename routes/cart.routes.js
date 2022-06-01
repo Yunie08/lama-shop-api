@@ -16,7 +16,7 @@ const {
 
 router
   .route("/")
-  .post(authentication, createCart)
+  .post(authentication, authorization, createCart)
   .get(authentication, adminAccess, getAllCarts);
 
 router
