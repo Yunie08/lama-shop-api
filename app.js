@@ -16,6 +16,9 @@ const userRoute = require("./routes/user.route");
 const productRoute = require("./routes/product.route");
 const cartRoute = require("./routes/cart.routes");
 const orderRoute = require("./routes/order.route");
+const stripeRoute = require("./routes/stripe.route");
+
+// Utils
 const AppError = require("./utils/appError");
 
 // Connection to database
@@ -44,6 +47,7 @@ app.use("/api/users", userRoute);
 app.use("/api/products", productRoute);
 app.use("/api/carts", cartRoute);
 app.use("/api/orders", orderRoute);
+app.use("api/checkout", stripeRoute);
 
 // Error hanlding
 app.all("*", (req, res, next) => {
