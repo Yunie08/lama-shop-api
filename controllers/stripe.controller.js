@@ -1,6 +1,7 @@
-const stripe = require("stripe")(process.env.STRIPE_KEY);
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
+const KEY = process.env.STRIPE_KEY;
+const stripe = require("stripe")(KEY);
 
 exports.processPayment = catchAsync(async (req, res, next) => {
   stripe.charges.create(
@@ -11,7 +12,7 @@ exports.processPayment = catchAsync(async (req, res, next) => {
     },
     (stripeErr, stripeRes) => {
       if (stripeErr) {
-        throw stripeErr;
+        return next(new AppError(stripeErr));
       } else {
         res.status(200).json({ status: "success", data: { stripeRes } });
       }

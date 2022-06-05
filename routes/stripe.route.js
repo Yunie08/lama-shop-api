@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-router.post("payment");
+const { processPayment } = require("../controllers/stripe.controller");
+
+router.route("/payment").post(processPayment);
 
 module.exports = router;
